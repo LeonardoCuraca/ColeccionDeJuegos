@@ -18,7 +18,7 @@ class JuegoViewController: UIViewController, UIImagePickerControllerDelegate, UI
     
     var imagePicker = UIImagePickerController()
     
-    var juego : Juego? = nul
+    var juego : Juego? = nil
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -29,7 +29,7 @@ class JuegoViewController: UIViewController, UIImagePickerControllerDelegate, UI
             tituloTextField.text = juego!.titulo
             agregarActualizarBoton.setTitle("Actualizar", for: .normal)
         } else {
-            eliminarBoton.isHidden = true
+            eliminardBoton.isHidden = true
         }
         
     }
@@ -39,11 +39,11 @@ class JuegoViewController: UIViewController, UIImagePickerControllerDelegate, UI
         present(imagePicker, animated: true, completion: nil)
     }
     
-    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey:  Any]) {
+    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
         let imagenSeleccionada = info[UIImagePickerController.InfoKey.originalImage] as! UIImage
         JuegoImageView.image = imagenSeleccionada
         imagePicker.dismiss(animated: true, completion: nil)
-    }
+    }//UIImagePickerController.InfoKey
     
     @IBAction func camaraTapped(_ sender: Any) {
         imagePicker.sourceType = .camera
@@ -51,7 +51,19 @@ class JuegoViewController: UIViewController, UIImagePickerControllerDelegate, UI
     }
     
     @IBAction func agregarTapped(_ sender: Any) {
-        if juego != nil {
+        if juego != nil{
+            juego!.titulo = tituloTextField.text
+            juego!.imagen = JuegoImageView.image!.pngData() as NSData? as Data?
+        }
+        else{
+            let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
+            let juego = Juego(context: context)
+            juego.titulo = tituloTextField.text
+            juego.imagen = JuegoImageView.image!.pngData() as NSData? as Data?
+        }
+        
+        (UIApplication.shared.delegate as! AppDelegate).saveContext()
+        navigationController!.popViewController(animated: true)        /*if juego != nil {
             juego!.titulo = tituloTextField.text
             juego!.imagen = UIImagePNGRepresentation(JuegoImageView.image!) as NSData?
         } else {
@@ -61,7 +73,7 @@ class JuegoViewController: UIViewController, UIImagePickerControllerDelegate, UI
             juego.imagen = UIImagePNGRepresentation(JuegoImageView.image!) as NSData?
         }
         (UIApplication.shared.delegate as! AppDelegate).saveContext()
-        navigationController!.popViewController(animated: true)
+        navigationController!.popViewController(animated: true)*/
     }
     
     @IBAction func eliminarTapped(_ sender: Any) {
